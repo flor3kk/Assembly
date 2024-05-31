@@ -1,6 +1,10 @@
 [bits 32]
       ;esp [ret]
 
+;DO execa:
+;nasm projekt_ask.asm -o projekt_ask.o -f win32
+;gcc projekt_ask.o -o projekt_ask.exe
+
 suma equ 0    ; na rejestrze EDI jest bo EAX sie krzaczy
 licznik equ 0
 
