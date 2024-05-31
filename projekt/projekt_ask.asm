@@ -31,7 +31,7 @@ przypisanie:  ;esp [print3][zmienna][ret]
       call [esi+3*4]
       mov ecx, [esp+4] ; ILE PETLI SIE WYKONA
 
-      mov edi, suma    ; eax = 0
+      mov edi, suma    ;edi = 0
       mov ebx, licznik ;ebx = 0 licznik do dzielenia
 
       add esp, 2*4  ; esp [ret]
@@ -50,7 +50,7 @@ petla:
              call getaddr2
 
       format2:
-             db "%i", 0
+             db "%i", 0 ;%lf
 
       getaddr2:   ;esp [%i][----][zmienna][ecx][ret]
              call [esi+4*4]
@@ -60,29 +60,25 @@ petla:
       format3:
              db "wprowadzona liczba: %i", 0xA, 0
 
-      getaddr3:     ;esp [x=][zmienna][ecx][ret]
+      getaddr3:     ;esp [format3=][zmienna][ecx][ret]
              call [esi+3*4]
 
-             add edi, [esp+4] ; eax = eax + zmienna
-             ;add edi,1
-
+             add edi, [esp+4] ; edi = edi + zmienna
              add esp, 2*4  ;esp [ecx][ret]
 
              pop ecx   ;esp [ret]
-             inc ebx
+             inc ebx   ;ebx++
              loop petla
 
-             ;mov eax, 10
-             push edi   ;esp [eax][ret]
+             push edi   ;esp [edi][ret]
              call wypisz_sume
 
 laczna_suma:
       db "suma = %i", 0xA, 0
 
-wypisz_sume:              ;esp [laczna_suma=][eax][ret]
+wypisz_sume:   ;esp [laczna_suma=][edi][ret]
       call [esi+3*4]
       add esp, 2*4  ;esp [ret]
-
 
       push ebx      ;esp[ebx][ret]
       call wypisz
@@ -93,7 +89,7 @@ ile_liczb:
 wypisz:     ;esp [ile_liczb][ebx][ret]
       call [esi+3*4]
       add esp, 2*4  ;esp [ret]
-       
+
       mov eax, edi  ;eax = edi, czyli nasza suma
       xor edx, edx  ;ustawienie edx = 0
       div ebx       ;edx:eax / ebx
@@ -130,7 +126,7 @@ koniec:    ;esp [srednia][eax = iloraz][edx = reszta][ret]
 ; 3 - printf
 ; 4 - scanf
 ;
-; To co funkcja zwróci jest w EAX.
+; To co funkcja zwrÃ³ci jest w EAX.
 ; Po wywolaniu funkcji sciagamy argumenty ze stosu.
 ;
 ; https://gynvael.coldwind.pl/?id=387
