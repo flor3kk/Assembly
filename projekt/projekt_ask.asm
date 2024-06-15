@@ -4,7 +4,8 @@
 ;DO execa:
 ;nasm projekt_ask.asm -o projekt_ask.o -f win32
 ;gcc projekt_ask.o -o projekt_ask.exe
-
+              
+finit         ; INICJALIZACJA COprocesora
 suma equ 0    ; na rejestrze EDI jest bo EAX sie krzaczy
 licznik equ 0
 
@@ -13,7 +14,7 @@ mov esi, ebx     ; esi = ebx
 call liczba_iteracji
 
 print:
-      db "ile razy wykonac petle?: ", 0
+      db "Ile liczb chcesz podac?: ", 0
 
 liczba_iteracji:     ;esp [print][ret]
       call [esi+3*4]
@@ -29,16 +30,32 @@ skanuj_liczbe:       ;esp [%i][----][zmienna][ret]
       call przypisanie
 
 print3:
-      db "ilosc iteracji: %i", 0xA, 0
+      db "Ilosc liczb: %i", 0xA, 0
 
 przypisanie:  ;esp [print3][zmienna][ret]
       call [esi+3*4]
       mov ecx, [esp+4] ; ILE PETLI SIE WYKONA
 
+      cmp ecx, 0       ; porownanie czy wartosc nie jest ujemna
+      jecxz domyslna      ; jesli ecx = 0 skocz do wartosci domyslnej
+      jg poprawna           ; jesli > 0 skocz do negacji
+      neg ecx          ; ecx = -ecx
+
+poprawna:
       mov edi, suma    ;edi = 0
       mov ebx, licznik ;ebx = 0 licznik do dzielenia
 
       add esp, 2*4  ; esp [ret]
+      jmp petla
+
+domyslna:
+      mov ecx, 1
+      
+      mov edi, suma
+      mov ebx, licznik
+      
+      add esp, 2*4
+      jmp petla
 
 petla:
       push ecx ;esp [ecx][ret]
@@ -67,7 +84,13 @@ petla:
       getaddr3:     ;esp [format3=][zmienna][ecx][ret]
              call [esi+3*4]
 
-             add edi, [esp+4] ; edi = edi + zmienna
+             mov eax, [esp+4]  ; do testu czy wartosc jest ujemna
+             test eax, eax     ; test
+             jge negat         ; skok jesli niej jest ujemna
+             neg eax           ; eax = -eax
+
+      negat:
+             add edi, eax ; edi = edi + zmienna
              add esp, 2*4  ;esp [ecx][ret]
 
              pop ecx   ;esp [ret]
@@ -82,6 +105,9 @@ laczna_suma:
 
 wypisz_sume:   ;esp [laczna_suma=][edi][ret]
       call [esi+3*4]
+
+      fild qword [esp]   ;st = [st0] = [edi]
+
       add esp, 2*4  ;esp [ret]
 
       push ebx      ;esp[ebx][ret]
@@ -92,21 +118,21 @@ ile_liczb:
 
 wypisz:     ;esp [ile_liczb][ebx][ret]
       call [esi+3*4]
+
+      fild qword [esp]    ;st = [st0, st1] = [ebx, edi]
+
       add esp, 2*4  ;esp [ret]
+      
+      fdiv
+      sub esp, 8
+      fstp qword [esp]
 
-      mov eax, edi  ;eax = edi, czyli nasza suma
-      xor edx, edx  ;ustawienie edx = 0
-      div ebx       ;edx:eax / ebx
-
-      push edx      ;esp [edx = reszta][ret]
-      push eax      ;esp [eax = iloraz][edx][ret]
       call koniec
 
 srednia:
-      db "iloraz: %i, "
-      db "reszta: %i", 0xA, 0
+      db "srednia: %0.2f", 0xA, 0
 
-koniec:    ;esp [srednia][eax = iloraz][edx = reszta][ret]
+koniec:    ;esp [srednia][][][ret]
       call [esi+3*4]
       add esp, 3*4
 
