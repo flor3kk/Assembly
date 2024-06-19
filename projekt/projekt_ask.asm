@@ -46,6 +46,7 @@ poprawna:
       mov ebx, licznik ;ebx = 0 licznik do dzielenia
 
       add esp, 2*4  ; esp [ret]
+
       jmp petla
 
 domyslna:
