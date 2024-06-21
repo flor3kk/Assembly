@@ -3,7 +3,7 @@
 
 ;DO execa:
 ;nasm projekt_ask.asm -o projekt_ask.o -f win32
-;gcc projekt_ask.o -o projekt_ask.exe
+;gcc projekt_ask.o -o projekt_ask.exe -m32
               
 finit         ; INICJALIZACJA COprocesora
 suma equ 0    ; na rejestrze EDI jest bo EAX sie krzaczy
@@ -14,7 +14,7 @@ mov esi, ebx     ; esi = ebx
 call liczba_iteracji
 
 print:
-      db "Ile liczb chcesz podac?: ", 0
+      db "Ile liczb chcesz podac? = ", 0
 
 liczba_iteracji:     ;esp [print][ret]
       call [esi+3*4]
@@ -30,7 +30,7 @@ skanuj_liczbe:       ;esp [%i][----][zmienna][ret]
       call przypisanie
 
 print3:
-      db "Ilosc liczb: %i", 0xA, 0
+      db "Ilosc liczb = %i", 0xA, 0
 
 przypisanie:  ;esp [print3][zmienna][ret]
       call [esi+3*4]
@@ -80,7 +80,7 @@ petla:
              call getaddr3
 
       format3:
-             db "wprowadzona liczba: %i", 0xA, 0
+             db "wprowadzona liczba: [%i]", 0xA, 0
 
       getaddr3:     ;esp [format3=][zmienna][ecx][ret]
              call [esi+3*4]
@@ -115,7 +115,7 @@ wypisz_sume:   ;esp [laczna_suma=][edi][ret]
       call wypisz
 
 ile_liczb:
-      db "ile liczb: %i", 0xA, 0
+      db "ile liczb = %i", 0xA, 0
 
 wypisz:     ;esp [ile_liczb][ebx][ret]
       call [esi+3*4]
